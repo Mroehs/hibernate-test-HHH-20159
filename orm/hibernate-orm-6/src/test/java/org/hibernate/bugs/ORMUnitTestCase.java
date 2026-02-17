@@ -61,12 +61,7 @@ class ORMUnitTestCase {
 			session.persist(article);
 
 			// the problem
-			String sql = """
-					SELECT
-					    a.price as price,
-					    a.price as prevPrice
-					FROM Article a
-					""";
+			String sql = "SELECT a.price as price, a.price as prevPrice FROM Article a";
 			session.createQuery(sql).unwrap(org.hibernate.query.Query.class).setTupleTransformer((tuple, aliases) -> {
 				List<String> list = Arrays.asList(aliases);
 				assertTrue("No alias for price", list.contains("price"));
