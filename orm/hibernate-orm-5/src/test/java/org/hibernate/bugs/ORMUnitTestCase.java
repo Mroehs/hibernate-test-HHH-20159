@@ -15,11 +15,18 @@
  */
 package org.hibernate.bugs;
 
+import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.testing.junit4.BaseCoreFunctionalTestCase;
+import org.hibernate.transform.ResultTransformer;
 import org.junit.Test;
 
 /**
@@ -37,8 +44,7 @@ public class ORMUnitTestCase extends BaseCoreFunctionalTestCase {
 	@Override
 	protected Class[] getAnnotatedClasses() {
 		return new Class[] {
-//				Foo.class,
-//				Bar.class
+				 Article.class 
 		};
 	}
 
@@ -72,7 +78,31 @@ public class ORMUnitTestCase extends BaseCoreFunctionalTestCase {
 		// BaseCoreFunctionalTestCase automatically creates the SessionFactory and provides the Session.
 		Session s = openSession();
 		Transaction tx = s.beginTransaction();
-		// Do stuff...
+		// insert some article
+		Article article = new Article();
+		article.setId(1L);
+		article.setName("Foobar");
+		article.setPrice(new BigDecimal(42));
+		session.persist(article);
+
+		// the problem
+		String sql = "SELECT a.price as price, a.price as prevPrice FROM Article a";
+		session.createQuery(sql).unwrap(org.hibernate.query.Query.class).setResultTransformer(new ResultTransformer() {
+			
+			@Override
+			public Object transformTuple(Object[] tuple, String[] aliases) {
+				List<String> list = Arrays.asList(aliases);
+				assertTrue("No alias for price", list.contains("price"));
+				assertTrue("No alias for prevPrice", list.contains("prevPrice"));
+				return null;
+			}
+			
+			@Override
+			public List transformList(List collection) {
+				return null;
+			}
+		}).getResultList();
+	
 		tx.commit();
 		s.close();
 	}
