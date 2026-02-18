@@ -37,9 +37,13 @@ import org.junit.jupiter.api.Test;
 @SessionFactory
 class ORMUnitTestCase {
 
-	// Add your tests, using standard JUnit 5.
+	/**
+	 * Having the same column used with two different aliases does not work
+	 * as expected in Hibernate 6/7. The array of aliases only contains the last
+	 * alias for the column (but twice). Using an AliasToBeanTransformer would result in null values.
+	 */
 	@Test
-	void hhh123Test(SessionFactoryScope scope) throws Exception {
+	void hhh20159Test(SessionFactoryScope scope) throws Exception {
 		scope.inTransaction(session -> {
 			// insert some article
 			Article article = new Article();

@@ -50,6 +50,11 @@ import org.junit.jupiter.api.Test;
 @SessionFactory
 class ORMUnitTestCase {
 
+	/**
+	 * Having the same column used with two different aliases does not work
+	 * as expected in Hibernate 6/7. The array of aliases only contains the last
+	 * alias for the column (but twice). Using an AliasToBeanTransformer would result in null values.
+	 */
 	@Test
 	void hhh20159Test(SessionFactoryScope scope) throws Exception {
 		scope.inTransaction(session -> {
@@ -68,7 +73,7 @@ class ORMUnitTestCase {
 				assertTrue("No alias for 'prevPrice'", list.contains("prevPrice"));
 				return null;
 			}).getResultList();
-			
+
 		});
 	}
 }

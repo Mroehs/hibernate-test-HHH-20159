@@ -56,25 +56,24 @@ public class ORMUnitTestCase extends BaseCoreFunctionalTestCase {
 //				"Bar.hbm.xml"
 		};
 	}
-	// If those mappings reside somewhere other than resources/org/hibernate/test, change this.
 	@Override
 	protected String getBaseForMappings() {
 		return "org/hibernate/test/";
 	}
 
-	// Add in any settings that are specific to your test.  See resources/hibernate.properties for the defaults.
 	@Override
 	protected void configure(Configuration configuration) {
 		super.configure( configuration );
 
 		configuration.setProperty( AvailableSettings.SHOW_SQL, Boolean.TRUE.toString() );
 		configuration.setProperty( AvailableSettings.FORMAT_SQL, Boolean.TRUE.toString() );
-		//configuration.setProperty( AvailableSettings.GENERATE_STATISTICS, "true" );
 	}
 
-	// Add your tests, using standard JUnit.
+	/**
+	 * Having the same column used with two different aliases worked as expected in Hibernate 5.x
+	 */
 	@Test
-	public void hhh123Test() throws Exception {
+	public void hhh20159Test() throws Exception {
 		// BaseCoreFunctionalTestCase automatically creates the SessionFactory and provides the Session.
 		Session s = openSession();
 		Transaction tx = s.beginTransaction();
